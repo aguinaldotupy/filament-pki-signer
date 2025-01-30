@@ -99,7 +99,7 @@ trait InteractsWithPAdES
      */
     public function afterInitializePAdES(): void
     {
-        //This event starts the signature process
+        // This event starts the signature process
         $this->dispatch('signPAdES', token: $this->token);
     }
 
@@ -140,7 +140,7 @@ trait InteractsWithPAdES
         $this->loading = false;
 
         // This event is triggered after the signed file is stored
-        //$this->redirect($this->getDownloadUrl());
+        // $this->redirect($this->getDownloadUrl());
     }
 
     public function getDownloadUrl()

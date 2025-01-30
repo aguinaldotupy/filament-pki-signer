@@ -102,7 +102,7 @@ class FilamentPkiSignerServiceProvider extends PackageServiceProvider
         return [
             AlpineComponent::make('filament-pki-signer', __DIR__ . '/../resources/dist/filament-pki-signer.js')->loadedOnRequest(),
             Css::make('filament-pki-signer-styles', __DIR__ . '/../resources/dist/filament-pki-signer.css'),
-            //Js::make('filament-pki-signer-scripts', __DIR__ . '/../resources/dist/filament-pki-signer.js'),
+            // Js::make('filament-pki-signer-scripts', __DIR__ . '/../resources/dist/filament-pki-signer.js'),
         ];
     }
 
