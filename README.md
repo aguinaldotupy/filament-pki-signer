@@ -1,11 +1,18 @@
-# Enhance your FilamentPHP applications by integrating Lacuna’s Web PKI, enabling robust digital certificate authentication and document signing capabilities.
+# Enhance your FilamentPHP applications by integrating Lacuna's Web PKI, enabling robust digital certificate authentication and document signing capabilities.
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/aguinaldotupy/filament-pki-signer.svg?style=flat-square)](https://packagist.org/packages/aguinaldotupy/filament-pki-signer)
 [![Total Downloads](https://img.shields.io/packagist/dt/aguinaldotupy/filament-pki-signer.svg?style=flat-square)](https://packagist.org/packages/aguinaldotupy/filament-pki-signer)
 
+The Filament PKI Signer is a powerful plugin that seamlessly integrates digital signature capabilities into your FilamentPHP applications using Lacuna's Web PKI infrastructure. This package enables you to implement PAdES (PDF Advanced Electronic Signatures) digital signatures, allowing users to sign PDF documents directly through your web interface using their digital certificates.
 
+Key features include:
+- Easy integration with FilamentPHP's form builder and pages
+- Support for PAdES signatures with customizable visual representation
+- Certificate selection interface with support for multiple languages (EN, PT-BR, ES)
+- Automatic detection and installation guidance for the Web PKI component
+- Flexible configuration options for signature positioning, visual elements, and security contexts
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+Perfect for applications requiring secure document signing, such as legal documents, contracts, or any workflow that needs reliable authentication and non-repudiation capabilities.
 
 ## Requirements
 
