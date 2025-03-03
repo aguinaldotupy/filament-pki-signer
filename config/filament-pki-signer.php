@@ -1,9 +1,11 @@
 <?php
 
-// config for Tupy/FilamentPkiSigner
 return [
-    'page' => \Tupy\FilamentPkiSigner\Pages\DocumentSigner::class,
+    'pages' => [
+        'lacuna-pades-signer' => \Tupy\FilamentPkiSigner\Pages\LacunaPadesDocumentSigner::class,
+    ],
     'restpki' => [
         'access_key' => env('RESTPKI_ACCESS_KEY'),
+        'security_context' => env('RESTPKI_SECURITY_CONTEXT'),
     ],
 ];

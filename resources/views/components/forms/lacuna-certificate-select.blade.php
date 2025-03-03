@@ -12,8 +12,14 @@
     $suffixIcon = $getSuffixIcon();
     $suffixLabel = $getSuffixLabel();
     $statePath = $getStatePath();
-    $token = $getToken();
 @endphp
+
+<div id="loadingBlockUI">
+    <x-filament::loading-indicator class="h-20 w-20" />
+    <div class="loading-text pt-4">
+        @lang('filament-pki-signer::translations.loading')
+    </div>
+</div>
 
 <x-dynamic-component
     :component="$getFieldWrapperView()"
@@ -40,9 +46,9 @@
     >
     <div
         ax-load
-        ax-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('filament-pki-signer', 'tupy/filament-pki-signer') }}"
+        ax-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('lacuna-certificate-select', 'tupy/filament-pki-signer') }}"
         ax-load-css="{{ \Filament\Support\Facades\FilamentAsset::getStyleHref('filament-pki-signer-styles', 'tupy/filament-pki-signer') }}"
-        x-data="pkiSigner({
+        x-data="lacunaCertificateSelect({
             state: $wire.{{ $applyStateBindingModifiers("\$entangle('{$getStatePath()}')") }},
             webPkiSignature: '{{ $getWebPkiSignature() }}',
             debug: @js($getDebug()),
@@ -63,6 +69,9 @@
             getOptionLabelByCertificateUsing: async (certificate) => {
                 return await $wire.getOptionLabelByCertificate(@js($statePath), certificate)
             },
+            onWebPkiNotInstalledUsing: async (status, message, params) => {
+                return await $wire.onWebPkiNotInstalled(@js($statePath), status, message, params)
+            },
             isAutofocused: @js($isAutofocused()),
             isMultiple: @js($isMultiple()),
             isSearchable: @js($isSearchable()),
@@ -82,7 +91,6 @@
             searchPrompt: @js($getSearchPrompt()),
             searchableOptionFields: @js($getSearchableOptionFields()),
             statePath: @js($statePath),
-            token: @js($token),
         })"
         wire:ignore
         x-on:keydown.esc="select.dropdown.isActive && $event.stopPropagation()"

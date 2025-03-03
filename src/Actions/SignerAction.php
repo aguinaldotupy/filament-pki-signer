@@ -5,7 +5,7 @@ namespace Tupy\FilamentPkiSigner\Actions;
 use Filament\Actions\Action;
 use Filament\Actions\StaticAction;
 use Tupy\FilamentPkiSigner\Concerns\InteractsWithPAdES;
-use Tupy\FilamentPkiSigner\Forms\Components\PkiSignerSelect;
+use Tupy\FilamentPkiSigner\Forms\Components\LacunaCertificateSelect;
 
 class SignerAction extends Action
 {
@@ -20,7 +20,7 @@ class SignerAction extends Action
         $this->label(__('filament-pki-signer::translations.signer'));
 
         $this->form([
-            PkiSignerSelect::make('certificate')
+            LacunaCertificateSelect::make('certificate')
                 ->disabled(fn () => $this->loading),
         ]);
 

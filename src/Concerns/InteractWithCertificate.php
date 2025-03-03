@@ -3,6 +3,8 @@
 namespace Tupy\FilamentPkiSigner\Concerns;
 
 use Illuminate\Support\Carbon;
+use Tupy\FilamentPkiSigner\Enum\Lacuna\InstallationStatesEnum;
+use Tupy\FilamentPkiSigner\Pages\WebPkiNotInstalled;
 
 trait InteractWithCertificate
 {
@@ -50,5 +52,14 @@ trait InteractWithCertificate
             ->sortBy('disabled')
             ->values()
             ->all();
+    }
+
+    public function onWebPkiNotInstalled(string $statePath, InstallationStatesEnum $status, string $message = '', array $params = []): void
+    {
+        $this->redirect(WebPkiNotInstalled::getUrl([
+            'status' => $status,
+            'message' => $message,
+            'params' => $params,
+        ]));
     }
 }

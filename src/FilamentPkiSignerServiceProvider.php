@@ -100,7 +100,7 @@ class FilamentPkiSignerServiceProvider extends PackageServiceProvider
     protected function getAssets(): array
     {
         return [
-            AlpineComponent::make('filament-pki-signer', __DIR__ . '/../resources/dist/filament-pki-signer.js')->loadedOnRequest(),
+            AlpineComponent::make('lacuna-certificate-select', __DIR__ . '/../resources/dist/components/forms/lacuna-certificate-select.js')->loadedOnRequest(),
             Css::make('filament-pki-signer-styles', __DIR__ . '/../resources/dist/filament-pki-signer.css'),
             // Js::make('filament-pki-signer-scripts', __DIR__ . '/../resources/dist/filament-pki-signer.js'),
         ];
@@ -146,7 +146,7 @@ class FilamentPkiSignerServiceProvider extends PackageServiceProvider
     protected function getMigrations(): array
     {
         return [
-            'create_filament-pki-signer_table',
+
         ];
     }
 }

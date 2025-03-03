@@ -45,6 +45,6 @@ const defaultOptions = {
 
 compile({
     ...defaultOptions,
-    entryPoints: ['./resources/js/index.js'],
-    outfile: './resources/dist/filament-pki-signer.js',
+    entryPoints: ['./resources/js/components/forms/lacuna-certificate-select.js'],
+    outfile: './resources/dist/components/forms/lacuna-certificate-select.js',
 })

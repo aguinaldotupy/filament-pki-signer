@@ -2,6 +2,7 @@
 
 namespace Tupy\FilamentPkiSigner\Concerns;
 
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -40,7 +41,7 @@ trait InteractsWithPAdES
         $signatureStarter->signaturePolicy = StandardSignaturePolicies::PADES_BASIC;
         $signatureStarter->securityContext = $plugin->getSecurityContext();
         $signatureStarter->measurementUnits = PadesMeasurementUnits::CENTIMETERS;
-        $signatureStarter->visualRepresentation = $plugin->getVisualRepresentation($restPkiClient);
+        $signatureStarter->visualRepresentation = $this->getVisualRepresentation($restPkiClient, $plugin);
 
         $this->token = $signatureStarter->startWithWebPki();
     }
@@ -65,12 +66,12 @@ trait InteractsWithPAdES
     {
         $this->loading = true;
 
-        $content = $this->getContentToSign();
+        $content = $this->getContentToBeSigned();
 
         if (blank($content)) {
             Notification::make()
-                ->title(__('Empty content'))
-                ->body(__('The content to be signed is empty.'))
+                ->title(__('filament-pki-signer::translations.empty_content'))
+                ->body(__('filament-pki-signer::translations.empty_content_message'))
                 ->danger()
                 ->send();
 
@@ -79,19 +80,28 @@ trait InteractsWithPAdES
             return;
         }
 
+        //@phpstan-ignore-next-line
         $this->callHook('beforeInitializePAdES');
 
-        $this->initializePAdES($this->getContentToSign());
+        $this->initializePAdES($this->getContentToBeSigned());
 
+        //@phpstan-ignore-next-line
         $this->callHook('afterInitializePAdES');
     }
 
     /**
      * Get the content to be signed by the PAdES.
      */
-    public function getContentToSign(): string
+    public function getContentToBeSigned(): string
     {
-        return '';
+        //@phpstan-ignore-next-line
+        $data = $this->form->getState();
+
+        if (isset($data['file'])) {
+            return Storage::disk(config('filament.default_filesystem_disk'))->get($data['file']);
+        }
+
+        throw new \RuntimeException(__('filament-pki-signer::translations.empty_content_message'));
     }
 
     /**
@@ -100,6 +110,7 @@ trait InteractsWithPAdES
     public function afterInitializePAdES(): void
     {
         // This event starts the signature process
+        //@phpstan-ignore-next-line
         $this->dispatch('signPAdES', token: $this->token);
     }
 
@@ -115,6 +126,7 @@ trait InteractsWithPAdES
 
         $signatureResult->writeToFile($this->pathStoredSignedFile);
 
+        //@phpstan-ignore-next-line
         $this->callHook('afterStoredSignedFile');
     }
 
@@ -127,8 +139,8 @@ trait InteractsWithPAdES
     {
         if (empty($this->pathStoredSignedFile)) {
             Notification::make()
-                ->title('Empty path')
-                ->body('The path to the signed file is empty.')
+                ->title(__('filament-pki-signer::translations.empty_content'))
+                ->body(__('filament-pki-signer::translations.empty_content_message'))
                 ->danger()
                 ->send();
 
@@ -140,11 +152,44 @@ trait InteractsWithPAdES
         $this->loading = false;
 
         // This event is triggered after the signed file is stored
-        // $this->redirect($this->getDownloadUrl());
+        $this->redirect($this->getSignedFileUrl());
+    }
+
+    public function getSignedFileUrl(): string
+    {
+        return Storage::disk(config('filament.default_filesystem_disk'))->url($this->fileName);
     }
 
     public function getDownloadUrl()
     {
         return Storage::disk(config('filament.default_filesystem_disk'))->url($this->fileName);
+    }
+
+    public function getDownloadAction(): Action
+    {
+        return Action::make('download')
+            ->label(__('filament-pki-signer::translations.view_signed_file'))
+            ->url($this->getDownloadUrl())
+            ->openUrlInNewTab();
+    }
+
+    public function getRestartAction(): Action
+    {
+        return Action::make('restart')
+            ->label(__('filament-pki-signer::translations.restart'))
+            ->action(function () {
+                $this->fileName = null;
+                $this->signerCert = null;
+                dd('he');
+            });
+    }
+
+    public function getVisualRepresentation(RestPkiClient $restPkiClient, FilamentPkiSignerPlugin $plugin): array
+    {
+        return [
+            'text' => $plugin->getTextConfig(),
+            'image' => $plugin->getImageConfig(),
+            'position' => $plugin->getPosition($restPkiClient),
+        ];
     }
 }

@@ -2,7 +2,7 @@
     @if(empty($this->signerCert))
         <x-filament-panels::form
             id="form"
-            :wire:key="$this->getId() . '.forms.' . $this->getFormStatePath()"
+            :wire:key="$this->getId() . '.forms.' . $this->form->getStatePath()"
             wire:submit="submit"
         >
             {{ $this->form }}
@@ -52,7 +52,7 @@
                         </li>
 
                         @isset($signerCert->pkiBrazil)
-                            <li class="mt-4">
+                            <li class="pt-4">
                                 <span class="font-semibold">ICP-Brasil fields</span>
                                 <ul class="mt-2 space">
                                     <li>
@@ -96,13 +96,7 @@
                 </x-filament::fieldset>
 
                 <x-filament::actions class="pt-6">
-                    <x-filament::button
-                        tag="a"
-                        href="{{ $this->getDownloadUrl() }}"
-                        target="_blank"
-                    >
-                        View file
-                    </x-filament::button>
+                    {{ $this->getDownloadAction() }}
                 </x-filament::actions>
             </div>
         </x-filament::section>

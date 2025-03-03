@@ -1,13 +1,10 @@
 import Choices from 'choices.js'
 import { LacunaWebPKI } from 'web-pki';
 
-export default function pkiSigner({
+export default function lacunaCertificateSelect({
     state,
     webPkiSignature,
     debug = false,
-    onReadCert,
-    onSignData,
-    onSignHash,
     canSelectPlaceholder,
     isHtmlAllowed,
     getOptionLabelUsing,
@@ -19,7 +16,6 @@ export default function pkiSigner({
     isSearchable,
     hasDynamicOptions,
     hasDynamicSearchResults,
-    livewireId,
     loadingMessage,
     maxItems,
     maxItemsMessage,
@@ -28,12 +24,10 @@ export default function pkiSigner({
     optionsLimit,
     placeholder,
     position,
-    searchDebounce,
-    searchingMessage,
     searchPrompt,
     searchableOptionFields,
     statePath,
-    getOptionLabelByCertificateUsing,
+    onWebPkiNotInstalledUsing,
 }) {
     return {
         isSearching: false,
@@ -57,7 +51,11 @@ export default function pkiSigner({
 
         token: null,
 
+        blockUIElement: null,
+
         init: async function () {
+
+            this.blockUIElement = document.getElementById('loadingBlockUI');
 
             this.select = new Choices(this.$refs.input, {
                 allowHTML: isHtmlAllowed,
@@ -107,70 +105,6 @@ export default function pkiSigner({
                 this.$nextTick(() => (this.isStateBeingUpdated = false))
             })
 
-            if (hasDynamicOptions) {
-                this.$refs.input.addEventListener('showDropdown', async () => {
-                    this.select.clearChoices()
-                    await this.select.setChoices([
-                        {
-                            label: loadingMessage,
-                            value: '',
-                            disabled: true,
-                        },
-                    ])
-
-                    await this.refreshChoices()
-                })
-            }
-
-            if (hasDynamicSearchResults) {
-                this.$refs.input.addEventListener('search', async (event) => {
-                    let search = event.detail.value?.trim()
-
-                    this.isSearching = true
-
-                    this.select.clearChoices()
-                    await this.select.setChoices([
-                        {
-                            label: [null, undefined, ''].includes(search)
-                                ? loadingMessage
-                                : searchingMessage,
-                            value: '',
-                            disabled: true,
-                        },
-                    ])
-                })
-
-                this.$refs.input.addEventListener(
-                    'search',
-                    Alpine.debounce(async (event) => {
-                        await this.refreshChoices({
-                            search: event.detail.value?.trim(),
-                        })
-
-                        this.isSearching = false
-                    }, searchDebounce),
-                )
-            }
-
-            if (!isMultiple) {
-                window.addEventListener(
-                    'filament-forms::select.refreshSelectedOptionLabel',
-                    async (event) => {
-                        if (event.detail.livewireId !== livewireId) {
-                            return
-                        }
-
-                        if (event.detail.statePath !== statePath) {
-                            return
-                        }
-
-                        await this.refreshChoices({
-                            withInitialOptions: false,
-                        })
-                    },
-                )
-            }
-
             this.$watch('state', async () => {
                 if (!this.select) {
                     return
@@ -188,6 +122,8 @@ export default function pkiSigner({
             })
 
             this.log('Initializing Web PKI component ...', state);
+
+            this.showLoadingBlockUI();
 
             this.pki = new LacunaWebPKI(webPkiSignature);
 
@@ -212,13 +148,28 @@ export default function pkiSigner({
                             let options = await this.$wire.generateSelectOptionsFromCertificates(statePath, certs);
 
                             this.setChoices(options);
+
+                            this.hiddenLoadingBlockUI();
                         });
                 },
-                notInstalled: () => {
+                notInstalled: async (status, message) => {
                     this.log('Web PKI not installed.');
+
+                    this.hiddenLoadingBlockUI();
+
+                    let params = {
+                        installUrl: this.pki._installUrl,
+                        brand: this.pki.brand || '',
+                        jslib: this.pki._jslibVersion,
+                        returnUrl: window.location.href
+                    };
+
+                    onWebPkiNotInstalledUsing(status, message, params);
                 },
                 defaultError: (error) => {
                     this.log('An error has occurred: ' + error);
+
+                    this.hiddenLoadingBlockUI();
                 }
             });
 
@@ -392,5 +343,17 @@ export default function pkiSigner({
                 },
             ]
         },
+
+        showLoadingBlockUI: function () {
+            if (this.blockUIElement) {
+                this.blockUIElement.style.display = 'flex';
+            }
+        },
+
+        hiddenLoadingBlockUI: function () {
+            if (this.blockUIElement) {
+                this.blockUIElement.style.display = 'none';
+            }
+        }
     }
 };

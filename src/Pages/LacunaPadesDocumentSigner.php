@@ -11,15 +11,14 @@ use Filament\Forms\Form;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
-use Livewire\Attributes\Url;
 use Tupy\FilamentPkiSigner\Concerns\InteractsWithPAdES;
 use Tupy\FilamentPkiSigner\Concerns\InteractWithCertificate;
-use Tupy\FilamentPkiSigner\Forms\Components\PkiSignerSelect;
+use Tupy\FilamentPkiSigner\Forms\Components\LacunaCertificateSelect;
 
 /**
  * @property Form $form
  */
-class DocumentSigner extends Page
+class LacunaPadesDocumentSigner extends Page
 {
     use InteractsWithActions;
     use InteractsWithFormActions;
@@ -28,10 +27,9 @@ class DocumentSigner extends Page
 
     public ?array $data = [];
 
-    #[Url]
-    public string $fileId = '';
+    protected static ?string $slug = 'lacuna-pades-signer';
 
-    protected static string $view = 'filament-pki-signer::pages.document-signer';
+    protected static string $view = 'filament-pki-signer::pages.lacuna-pades-document-signer';
 
     public static function getNavigationGroup(): ?string
     {
@@ -70,9 +68,8 @@ class DocumentSigner extends Page
                             ->translateLabel()
                             ->required()
                             ->moveFiles()
-                            ->disk('public')
-                            ->visible(fn () => blank($this->fileId)),
-                        PkiSignerSelect::make('certificate')
+                            ->disk('public'),
+                        LacunaCertificateSelect::make('certificate')
                             ->translateLabel()
                             ->required(),
                     ]),
@@ -97,5 +94,10 @@ class DocumentSigner extends Page
     public function submit(): void
     {
         $this->startPAdES();
+    }
+
+    public function mount(): void
+    {
+        $this->form->fill();
     }
 }
