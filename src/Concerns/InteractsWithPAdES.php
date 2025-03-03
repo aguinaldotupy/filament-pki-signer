@@ -80,12 +80,12 @@ trait InteractsWithPAdES
             return;
         }
 
-        //@phpstan-ignore-next-line
+        // @phpstan-ignore-next-line
         $this->callHook('beforeInitializePAdES');
 
         $this->initializePAdES($this->getContentToBeSigned());
 
-        //@phpstan-ignore-next-line
+        // @phpstan-ignore-next-line
         $this->callHook('afterInitializePAdES');
     }
 
@@ -94,7 +94,7 @@ trait InteractsWithPAdES
      */
     public function getContentToBeSigned(): string
     {
-        //@phpstan-ignore-next-line
+        // @phpstan-ignore-next-line
         $data = $this->form->getState();
 
         if (isset($data['file'])) {
@@ -110,7 +110,7 @@ trait InteractsWithPAdES
     public function afterInitializePAdES(): void
     {
         // This event starts the signature process
-        //@phpstan-ignore-next-line
+        // @phpstan-ignore-next-line
         $this->dispatch('signPAdES', token: $this->token);
     }
 
@@ -126,7 +126,7 @@ trait InteractsWithPAdES
 
         $signatureResult->writeToFile($this->pathStoredSignedFile);
 
-        //@phpstan-ignore-next-line
+        // @phpstan-ignore-next-line
         $this->callHook('afterStoredSignedFile');
     }
 
