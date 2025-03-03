@@ -173,17 +173,6 @@ trait InteractsWithPAdES
             ->openUrlInNewTab();
     }
 
-    public function getRestartAction(): Action
-    {
-        return Action::make('restart')
-            ->label(__('filament-pki-signer::translations.restart'))
-            ->action(function () {
-                $this->fileName = null;
-                $this->signerCert = null;
-                dd('he');
-            });
-    }
-
     public function getVisualRepresentation(RestPkiClient $restPkiClient, FilamentPkiSignerPlugin $plugin): array
     {
         return [
