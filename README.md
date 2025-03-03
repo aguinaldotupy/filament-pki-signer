@@ -9,7 +9,7 @@ This is where your description should go. Limit it to a paragraph or two. Consid
 
 ## Requirements
 
-- PHP 7.4 or higher
+- PHP 8.2 or higher
 - [Lacuna Rest PKI token](https://pki.rest/)
 
 ## Installation
